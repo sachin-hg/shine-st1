@@ -20,7 +20,7 @@ This project uses [`next.js`](https://nextjs.org/docs)
 
 ## More details about this project
 
-This project uses the following []
+This project uses the following 
 
 - JS Framework: NextJs with ReactJs
 - [MailSend](https://accounts.mailersend.com/) for sending emails. Mailsend is used to send emails to `smile@shinestudio.in` when a user fills in the "Contact Us" form on the website.
@@ -34,7 +34,7 @@ This project uses the following []
 - Vercel: Website is hosted on vercel: https://vercel.com/login
   - Login with github
   - Attached Email: `smile@shinestudio.in`
-  - Vercel automatically pulls code from github. new deployments are automatically trigged when code is pushed to github on branch 'main'.
+  - Vercel automatically pulls code from github. new deployments are automatically triggered when code is pushed to github on branch 'main'.
   - in the `settings` tab, you'll find `Environment Variables` which are same as the  file `.env.local`. These hold API keys for Mailsend, ImageKit
 - Godaddy
   - Login Email: `smile@shinestudio.in`
@@ -45,7 +45,7 @@ This project uses the following []
   - Auto renewal must be enabled. and payment Credit Card must be added
   - the Email: smile@shinestudio.in works because of DNS settings in this account
   - This account also holds DNS settings which point website traffic to vercel
-  - This account also holds DNS settings which enable mailTrap to send emails
+  - This account also holds DNS settings which enable mailsend to send emails
 - ImageKit accounts: This is where we store all data
   - all images are stored here. Albums + website images
   - the data is divided into 5 accounts, so that we don't exceed the 20GB usage per account 

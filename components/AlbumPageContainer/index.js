@@ -1,4 +1,3 @@
-'use client'
 import AlbumsRenderer from '@/components/AlbumRenderer';
 import {useEffect, useState} from "react";
 import { useParams } from 'next/navigation'

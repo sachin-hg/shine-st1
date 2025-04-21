@@ -1,37 +1,24 @@
-'use client'
-import Home from '@/components/Home'
-import React, {useEffect, useState} from "react";
+// Client Component - components/Preview/index.js
+// This component manages the preview modal and its close functionality.
+import React from "react";
 import styles from './preview.module.css'
-import Loader from "@/components/Loader";
-export default function Preview ({modifiedData, keys, component: Component = Home, onClose}) {
-    const [data, setData] = useState(null)
-    const [loading, setLoading] = useState(true)
+import {Fragment} from "react";
+import PreviewTitle from "@/components/Preview/PreviewTitle";
+import PreviewImages from "@/components/Preview/PreviewImages";
 
-    const getData = () => {
-        setLoading(true)
-        return fetch('/api/get-home-data', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({keys})}).then(res => res.json())
-            .then(data => {
-                setLoading(false)
-                if (data.done) {
-                    setData(data.data)
-                    return data
-                } else {
-                    throw new Error('Couldnt load data')
-                }
-            })
-    }
-
-    useEffect(() => {
-        getData()
-    }, [])
-
-    if (loading) {
-        return <Loader />
-    }
-
+export default function Preview({ title, song, images, tags, onClose }) {
     return (
         <div className={styles.container}>
-            <Component {...data} {...modifiedData} onClose={onClose} />
+            {/* Render server component islands for title and images */}
+            <Fragment>
+                <PreviewTitle title={title} song={song} />
+                <PreviewImages images={images} tags={tags} />
+                {/* Close button with client-side functionality */}
+                <button className={styles.close} onClick={onClose}>
+                    Close
+                </button>
+            </Fragment>
         </div>
-    )
+    );
 }
+

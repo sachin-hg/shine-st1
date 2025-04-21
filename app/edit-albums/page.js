@@ -1,10 +1,10 @@
-'use client'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import SearchInput from "@/components/SearchInput";
-import {useEffect, useState} from 'react'
+// remove 'use client' directive
+import {useEffect, useState, Fragment} from 'react' // add Fragment
 import styles from './uploadAlbums.module.css'
 import AlbumsRenderer from '@/components/AlbumRenderer';
+import SearchInput from "@/components/SearchInput"; // import SearchInput
+import Header from '@/components/Header' // import Header
+import Footer from '@/components/Footer' // import Footer
 import Loader from "@/components/Loader";
 import AlbumPage from '@/components/AlbumPage';
 import PreviewTemp from '@/components/Preview';
@@ -12,8 +12,10 @@ import Login from '@/components/Login';
 import Home from '@/components/Home';
 import cs from 'classnames'
 import logo from '@/images/logo.png'
-import white from '@/images/white.webp'
+import white from '@/images/white.webp' // white logo
 import {upload} from "@/utils/upload";
+import { Preview } from './Preview'; // import Preview
+import { AlbumEditForm } from './AlbumEditForm'; // import AlbumEditForm
 import { useParams } from 'next/navigation'
 const items = [{text: 'Dashboard', url: '/dashboard'}, {text: 'Albums', url: '/albums'}, {text: 'Upload', url: '/upload-albums'}, {text: 'Find', url: '/find-albums'}, {text: 'Edit', url: '/edit-albums'}, {text: 'Change Pin', url: '/change-pin'}]
 const leftItems = ['Contact', {name: 'Logout', onClick: () => {
@@ -35,6 +37,7 @@ const AlteredHome = (props) => {
     return <Home {...props} preview rightItems={right} />
 }
 
+// Validates logos to ensure all required logos are present and unique based on their 'title' tag.
 const logoValidator = (existingData, files) => {
     const keys = {}
     const {images = []} = existingData || {}
@@ -64,6 +67,7 @@ const logoValidator = (existingData, files) => {
 
 }
 
+// Validates services to ensure that each service has a unique PIN, checking against existing and newly uploaded files.
 const serviceValidator = (existingData, files) => {
     const found = {}
     const {images = []} = existingData || {}
@@ -85,6 +89,8 @@ const serviceValidator = (existingData, files) => {
     }
     return {valid: true}
 }
+
+// Validates scroll frames, checking 'timesToRepeat' and 'backgroundPosition' tags for valid numeric values and dependencies.
 const frameValidator = (existingData, files) => {
     const {images = []} = existingData || {}
     let error = false
@@ -140,6 +146,8 @@ const frameValidator = (existingData, files) => {
     }
     return {valid: true}
 }
+
+// Validates user data, checking for whitespace in fields, valid roles ('admin' or 'user'), unique usernames, and ensuring username and password are not the same.
 const userValidator = (existingData, files) => {
     const {images = []} = existingData || {}
     const usernames = {}
@@ -188,6 +196,7 @@ const userValidator = (existingData, files) => {
     return {valid: true}
 }
 
+// Validates carousel images, checking 'textLocation' against a predefined list, 'backgroundPosition' for a valid number, and ensuring 'description' is accompanied by a 'title'.
 const carouselImagesValidator = (existingData, files) => {
     const {images = []} = existingData || {}
     let regexFail = false
@@ -234,6 +243,7 @@ const specialItems = {
     logos: {validator: logoValidator, title: 'Edit Website Logos', subtitle: 'Edit Website logos', submitText: 'Update', tags: [{key: 'title', required: true, disabled: true}]}, // required 1 tag,
     usermanagement: {validator: userValidator, preview: false, roles: ['admin'], title: 'Edit Users', subtitle: 'Add / Remove users', submitText: 'Update', tags: [{key: 'username', required: true}, {key: 'password', required: true, type: 'password'}, {key: 'role', required: true}]}
 }
+// This function prepares item data for submission by extracting relevant tags and combining them into a newTags array.
 
 const unParse = (item, pin) => {
     let {tags = []} = specialItems[pin] || {}
@@ -248,6 +258,7 @@ const unParse = (item, pin) => {
     }
 }
 
+// Fetches files and metadata associated with a given PIN from the server, parsing tags specific to special items if applicable.
 const getFiles = async (pin) => {
         let {done, images = [], song, ...dta} = await fetch('/api/get-files', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({pin, meta: true})}).then(res => res.json())
         if (!done) {
@@ -318,7 +329,7 @@ function Edit({PreviewComponent, role = 'user', pinPrepend = '', tags = defaultT
     const [existingData, setExistingData] = useState(null)
     const [showPreview, setPreview] = useState(false)
     let {pin: urlPin} = useParams()
-    if (urlPin) {
+        if (urlPin) {
         urlPin = urlPin.toLowerCase()
         urlPin = pinPrepend + urlPin
     }
@@ -626,8 +637,9 @@ function Edit({PreviewComponent, role = 'user', pinPrepend = '', tags = defaultT
 
 
     return (
-        <>
-            <Header logoMap={{mainLogo: logo.src}} leftItems={leftItems} rightItems={items} showLeft={false} />
+            // use React.Fragment to render all components
+            <Fragment>
+            <Header logoMap={{mainLogo: logo.src}} leftItems={leftItems} rightItems={items} showLeft={false} /> {/* Header */}
             {urlPin && !existingData && <Loader />}
             {roleMatch && <>
                 {!urlPin && <SearchInput
@@ -651,16 +663,16 @@ function Edit({PreviewComponent, role = 'user', pinPrepend = '', tags = defaultT
                                 }}
                         ]),
                             {key: 'files', type: 'file', placeholder: 'Select Files', validator: () => true, onChange: (e) => {
-                            const f = [...e.target.files].map((file, index) => {
+                                const f = [...e.target.files].map((file, index) => {
                                 let [ext] = file.name.match(/\.[a-zA-Z0-9]+$/)
-                                let name = file.name.replace(/\.[a-zA-Z0-9]+$/, '')
-                                name = name.replace(/\D/g, '')
+                                    let name = file.name.replace(/\.[a-zA-Z0-9]+$/, '')
+                                    name = name.replace(/\D/g, '')
                                 name = name.length > 0 ? name : index
-                                return {ext, file, objectUrl: URL.createObjectURL(file), key: parseInt(name)}
-                            }).sort((x, y) => x.key > y.key ? 1 : -1).map((file, index) => ({...file, key: index + 1 + lastIndex}))
-                            setFiles([...files, ...f])
-                            return f
-                        }}]}>{children}</SearchInput>
+                                    return {ext, file, objectUrl: URL.createObjectURL(file), key: parseInt(name)}
+                                }).sort((x, y) => x.key > y.key ? 1 : -1).map((file, index) => ({...file, key: index + 1 + lastIndex}))
+                                    setFiles([...files, ...f])
+                                    return f
+                                }}]}>{/* Render AlbumEditForm with props */}<AlbumEditForm {...{initialVal, tags, specialItem, resValid, error, existingData, files, specialTags, numFiles, numeric, duplicateNewNameFound}} >{children}</AlbumEditForm></SearchInput>
                 )}
             </>}
             {!roleMatch && <div className={styles.roleError}>You are not authorised for this action. Users with following roles can view this content: `{requiredRoles.join(', ')}`</div>}
@@ -668,7 +680,7 @@ function Edit({PreviewComponent, role = 'user', pinPrepend = '', tags = defaultT
             {showPreview && <PreviewComp Comp={PreviewComponent} specialItem={specialItem} togglePreview={togglePreview} tags={tags} data={showPreview} existingData={existingData} files={files} />}
         </>
     )
-}
+} // close the Edit function
 
 export default function EditPage ({submitText, tags, title, pinPrepend, subTitle, PreviewComponent}) {
     const Comp = ({role}) => <Edit PreviewComponent={PreviewComponent} role={role} submitText={submitText} tags={tags} title={title} pinPrepend={pinPrepend} subTitle={subTitle} />

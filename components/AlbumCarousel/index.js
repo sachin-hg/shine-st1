@@ -117,6 +117,25 @@ const keyFunction = (active, setActive, images) => (e) => {
     }
 }
 const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false, dimensions, windowDimensions, dimensions: {w = 1, h = 1} = {}, autoPlay = false, activeId = 2}) => {
+    // `images`: Array of image URLs or objects containing a `url` property.
+    // `isPortrait`: Boolean indicating if the device is in portrait mode.
+    // `isLandscapeView`: Boolean indicating if the view should be forced to landscape mode.
+    // `keyboard`: Boolean enabling keyboard navigation.
+    // `dimensions`: Object containing `w` (width) and `h` (height) of the carousel item.
+    // `windowDimensions`: Object containing `wH` (window height) and `wW` (window width).
+    // `autoPlay`: Boolean to enable automatic slide transitions.
+    // `activeId`: Initial active slide index.
+
+    // `ref`: Ref for the autoplay timeout.
+    // `keyRef`: Ref for the keyboard event listener.
+    // `active`: Current active slide index.
+    // `pendingFlips`: Array of objects representing pending slide transitions, with `to` (target index) and `direction` ('LEFT' or 'RIGHT').
+    // `currentShow`: The slide currently being displayed.
+    // `transitionStatus`: Current transition state ('ENDED' or 'PENDING').
+    // `isAutoPlay`: Boolean for controlling autoplay.
+    // `isShowLegends`: Boolean for toggling visibility of slide legend dots.
+    // `showRotatePrompt`: Boolean for showing device rotation prompt on mobile.
+    // `ratio`: Aspect ratio of the carousel item.
 
     const ref = useRef(null)
     const keyRef = useRef(null)
@@ -128,6 +147,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
     const [isShowLegends, toggleLegends] = useState(true)
     const [showRotatePrompt, togglePrompt] = useState(true)
     const ratio = w / h
+    //Calculates aspect ratio
 
     const setActive = (id) => {
         const {to: prevTo = active} = pendingFlips[pendingFlips.length - 1] || {}
@@ -141,6 +161,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
     }
 
     const {wH, wW} = windowDimensions
+    // destructure window dimensions
 
     const isMobile = wW <= 1100
 
@@ -204,6 +225,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
         }
 
     }, [images.length, active, isAutoPlay])
+    // Auto play functionality, using `setInterval`
 
     useEffect(() => {
         keyRef.current && window.removeEventListener('keydown', keyRef.current)
@@ -218,6 +240,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
             keyRef.current = null
         }
     }, [keyboard, images.length, active])
+    // Setup for keyboard event listener.  Listens for left/right arrow keys to change slides.
 
     const endTransition = () => {
 
@@ -232,6 +255,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
         }
         pendingFlips.length && setFlips(pending)
     }
+    // Manages the state after a transition ends.  It updates the current slide and removes the completed transition from `pendingFlips`.
 
     // console.log(pendingFlips, transitionStatus, currentShow, 'sdfsd45345345')
 
@@ -268,6 +292,7 @@ const Carousel = ({images, isPortrait, isLandscapeView = true, keyboard = false,
     if (showRotatePrompt && !isPortrait && !isLandscapeView && isMobile) {
         return <Modal><div className={styles.rotate}><b>Rotate your device</b>for a better experience</div></Modal>
     }
+    // Modal that shows up on portrait orientation to tell users to rotate their device to landscape
     const children = images.map(img => <div className={styles.legendImage} style={{'--bg': `url('${img.url || img}')`}} key={img.url || img} />)
     return (
 

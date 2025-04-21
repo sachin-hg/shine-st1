@@ -8,7 +8,9 @@ import Loader from "@/components/Loader";
 import musicAnimation from './music_animation.gif'
 import defaultSong from './defaultMusic.mp3'
 const defaultOnClose = () => window.location.href = '/albums'
+// AlbumRenderer component: Renders an album with a carousel of images, optional music, and controls.
 const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width: w, logoMap, onClose = defaultOnClose}) => {
+    // State variables for managing component data and behavior.
     const [data, setData] = useState(h && w ? {height: h, width: w} : null)
     const [play, toggleMusic] = useState(true)
     const [windowDimensions, setDimensions] = useState(null)
@@ -17,7 +19,7 @@ const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width
     const ref3 = useRef(null)
     const [firstImage] = images || []
     const firstImageUrl = firstImage.url || firstImage
-
+    // useEffect hook to determine image dimensions if not provided.
     useEffect(() => {
         if (!h || !w) {
             const img = new Image()
@@ -27,21 +29,26 @@ const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width
             img.src = firstImageUrl
         }
     }, [h, w, firstImageUrl])
-
+    // useEffect hook to import and initialize the turn.js library for the carousel effect.
     useEffect(() => {
         import('@/components/AlbumCarousel2/turn/jquery.min.1.7').then(() => import('@/components/AlbumCarousel2/turn/turn.min'))
     }, [])
-
+    // useEffect hook to handle global click and keydown events for music control.
     useEffect(() => {
         if (ref && ref.current) {
             document.body.removeEventListener('click', ref.current)
             document.body.removeEventListener('keydown', ref.current)
         }
         ref.current = null
+        // If music is playing.
         if (play) {
+            // Define a function to play the music and remove event listeners.
             ref.current = function () {
                 ref2 && ref2.current && ref2.current.play()
+                // Remove event listeners to prevent multiple calls.
                 if (ref && ref.current) {
+                    // Remove click and keydown listeners from the document body.
+                    // These listeners were added to start music on user interaction.
                     document.body.removeEventListener('click', ref.current)
                     document.body.removeEventListener('keydown', ref.current)
                     ref.current = null
@@ -50,6 +57,7 @@ const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width
             document.body.addEventListener("click", ref.current)
             document.body.addEventListener("keydown", ref.current)
         }
+        // Cleanup function to remove event listeners when the component unmounts or play state changes.
 
         return () => {
             if (ref && ref.current) {
@@ -59,9 +67,10 @@ const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width
             ref.current = null
         }
     }, [])
-
+    // useEffect hook to manage window resize events and update dimensions.
     useEffect(() => {
         setDimensions({wH: document.documentElement.clientHeight, wW: document.documentElement.clientWidth})
+        // Event listener function to update dimensions on window resize.
 
         ref3 && ref3.current && window.removeEventListener('resize', ref3.current)
         ref3.current = () => {
@@ -69,6 +78,7 @@ const AlbumRenderer = ({title, song = defaultSong, images = [], height: h, width
         }
         window.addEventListener('resize', ref3.current)
         return () => {
+            // Clean up the resize event listener.
             ref3 && ref3.current && window.removeEventListener('resize', ref3.current)
             ref3.current = null
         }

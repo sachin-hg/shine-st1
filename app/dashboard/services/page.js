@@ -1,4 +1,3 @@
-'use client'
 import Dashboard from '../page'
 import {useEffect, useState} from "react";
 import Loader from '@/components/Loader'
